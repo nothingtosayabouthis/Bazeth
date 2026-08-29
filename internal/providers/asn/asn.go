@@ -43,11 +43,22 @@ func (p *Provider) Enrich(result *ip.Result) error {
 	}
 
 	fields := strings.Split(scanner.Text(), "|")
-	if len(fields) < 1 {
+	if len(fields) < 7 {
 		return nil
 	}
 
 	result.ASN = "AS" + strings.TrimSpace(fields[0])
+
+	// Fill country only if RDAP didn't provide one.
+	if result.Country == "" {
+		result.Country = strings.TrimSpace(fields[3])
+	}
+
+	// Fill organization only if it's still empty.
+	if result.Organization == "" {
+		result.Organization = strings.TrimSpace(fields[6])
+	}
+
 	result.Source = append(result.Source, p.Name())
 
 	return nil

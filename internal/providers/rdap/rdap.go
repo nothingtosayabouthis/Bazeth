@@ -34,10 +34,13 @@ func (p *Provider) Enrich(result *ip.Result) error {
 	}
 
 	// Fill registry information.
-	result.NetworkName = network.Handle
-
+	if result.NetworkName == "" && network.Handle != "" {
+		result.NetworkName = network.Handle
+	}
 	if network.Port43 != "" {
-		result.Registry = normalizeRegistry(network.Port43)
+		if result.Registry == "" && network.Port43 != "" {
+			result.Registry = normalizeRegistry(network.Port43)
+		}
 	}
 
 	// Fill network range.
@@ -47,8 +50,11 @@ func (p *Provider) Enrich(result *ip.Result) error {
 		result.StartAddress,
 		result.EndAddress,
 	)
-	// Fill country.
-	result.Country = network.Country
+
+	// Fill country only when RDAP provides a value.
+	if network.Country != "" {
+		result.Country = network.Country
+	}
 
 	// Fill organization.
 	if len(network.Entities) > 0 {
