@@ -2,7 +2,7 @@ package rdap
 
 import (
 	"fmt"
-	"net"
+	"strings"
 
 	"bazeth/internal/ip"
 
@@ -24,30 +24,42 @@ func (p *Provider) Name() string {
 }
 
 func (p *Provider) Enrich(result *ip.Result) error {
-	parsedIP := net.ParseIP(result.IP)
-	if parsedIP == nil {
-		return fmt.Errorf("invalid IP address")
-	}
-
-	response, err := p.client.QueryIP(parsedIP.String())
+	network, err := p.client.QueryIP(result.IP)
 	if err != nil {
 		return err
 	}
 
-	// Fill organization name.
-	if len(response.Entities) > 0 {
-		result.Organization = response.Entities[0].Handle
-	}
-
 	// Fill network range.
-	if response.StartAddress != "" && response.EndAddress != "" {
-		result.CIDR = fmt.Sprintf("%s - %s", response.StartAddress, response.EndAddress)
+	result.CIDR = fmt.Sprintf("%s - %s", network.StartAddress, network.EndAddress)
+
+	// Fill country.
+	result.Country = network.Country
+
+	// Fill organization.
+	if len(network.Entities) > 0 {
+		entity := network.Entities[0]
+
+		if name := entity.VCard.Name(); name != "" {
+			result.Organization = name
+		} else if org := entity.VCard.Org(); org != "" {
+			result.Organization = org
+		} else {
+			result.Organization = entity.Handle
+		}
 	}
 
-	// Fill country when available.
-	result.Country = response.Country
+	// Fill abuse contact.
+	for _, entity := range network.Entities {
+		for _, role := range entity.Roles {
+			if strings.EqualFold(role, "abuse") {
+				if email := entity.VCard.Email(); email != "" {
+					result.AbuseEmail = email
+					break
+				}
+			}
+		}
+	}
 
-	// Record the provider used.
 	result.Source = append(result.Source, p.Name())
 
 	return nil
