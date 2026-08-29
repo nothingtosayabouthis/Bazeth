@@ -6,6 +6,7 @@ import (
 	"bazeth/internal/ip"
 	"bazeth/internal/providers"
 
+	_ "bazeth/internal/providers/asn"
 	_ "bazeth/internal/providers/rdap"
 	_ "bazeth/internal/providers/reverse_dns"
 )

@@ -6,8 +6,12 @@ type Result struct {
 
 	Organization string
 	Country      string
+
 	CIDR         string
-	ASN          string
+	StartAddress string
+	EndAddress   string
+
+	ASN string
 
 	AbuseEmail string
 	ReverseDNS string

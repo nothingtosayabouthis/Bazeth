@@ -31,6 +31,8 @@ func (p *Provider) Enrich(result *ip.Result) error {
 	}
 
 	// Fill network range.
+	result.StartAddress = network.StartAddress
+	result.EndAddress = network.EndAddress
 	result.CIDR = fmt.Sprintf("%s - %s", network.StartAddress, network.EndAddress)
 
 	// Fill country.
