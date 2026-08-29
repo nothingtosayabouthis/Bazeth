@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	mdns "github.com/miekg/dns"
-
 	"bazeth/internal/active/fingerprint"
 	"bazeth/internal/dns"
 	"bazeth/internal/output"
@@ -50,12 +48,12 @@ func main() {
 
 		fmt.Printf("[*] Target        : %s\n", args[1])
 
-		dns.PrintSection("A", must(client.Resolve(args[1], mdns.TypeA)))
-		dns.PrintSection("AAAA", must(client.Resolve(args[1], mdns.TypeAAAA)))
-		dns.PrintSection("MX", must(client.Resolve(args[1], mdns.TypeMX)))
-		dns.PrintSection("NS", must(client.Resolve(args[1], mdns.TypeNS)))
-		dns.PrintSection("TXT", must(client.Resolve(args[1], mdns.TypeTXT)))
-		dns.PrintSection("CNAME", must(client.Resolve(args[1], mdns.TypeCNAME)))
+		for _, record := range dns.Supported {
+			dns.PrintSection(
+				record.Name,
+				must(client.Resolve(args[1], record.Type)),
+			)
+		}
 
 	case "fingerprint":
 		if len(args) != 2 {
@@ -90,9 +88,6 @@ func main() {
 			fmt.Printf("[*] TLS CN        : %s\n", info.TLSCommonName)
 		}
 
-	case "version":
-		fmt.Printf("Bazeth %s\n", Version)
-
 	case "whois":
 		if len(args) != 2 {
 			fmt.Println("Usage: bazeth whois <domain>")
@@ -123,6 +118,9 @@ func main() {
 
 		tld.Print(result)
 
+	case "version":
+		fmt.Printf("Bazeth %s\n", Version)
+
 	default:
 		printUsage()
 		os.Exit(1)
@@ -133,7 +131,6 @@ func must(records []string, err error) []string {
 	if err != nil {
 		return nil
 	}
-
 	return records
 }
 
@@ -143,6 +140,8 @@ func printUsage() {
 Usage:
   bazeth ip <address>
   bazeth dns <domain>
+  bazeth whois <domain>
+  bazeth tld <extension>
   bazeth fingerprint <address>
   bazeth version
 `, Version)
