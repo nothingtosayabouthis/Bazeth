@@ -21,12 +21,13 @@ func main() {
 
 	fmt.Println("IP:", result.IP)
 	fmt.Println("Version:", result.Version)
+	fmt.Println("ASN:", result.ASN)
 	fmt.Println("Organization:", result.Organization)
+	fmt.Println("Registry:", result.Registry)
+	fmt.Println("Network:", result.NetworkName)
 	fmt.Println("Country:", result.Country)
 	fmt.Println("CIDR:", result.CIDR)
 	fmt.Println("Abuse:", result.AbuseEmail)
-	fmt.Println("Sources:", result.Source)
 	fmt.Println("Reverse DNS:", result.ReverseDNS)
-	fmt.Println("Registry:", result.Registry)
-	fmt.Println("Network:", result.NetworkName)
+	fmt.Println("Sources:", result.Source)
 }

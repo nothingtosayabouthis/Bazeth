@@ -15,8 +15,11 @@ type Result struct {
 
 	ASN string
 
-	AbuseEmail string
-	ReverseDNS string
+	AbuseEmail  string
+	ReverseDNS  string
+	ThreatScore int
+	IsMalicious bool
+	UsageType   string
 
 	Source []string
 }

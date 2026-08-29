@@ -2,10 +2,13 @@ package rdap
 
 import (
 	"fmt"
+	"net"
 	"strings"
 
 	"bazeth/internal/ip"
 	"bazeth/internal/providers"
+
+	netutil "bazeth/internal/network"
 
 	"github.com/openrdap/rdap"
 )
@@ -34,14 +37,16 @@ func (p *Provider) Enrich(result *ip.Result) error {
 	result.NetworkName = network.Handle
 
 	if network.Port43 != "" {
-		result.Registry = network.Port43
+		result.Registry = normalizeRegistry(network.Port43)
 	}
 
 	// Fill network range.
 	result.StartAddress = network.StartAddress
 	result.EndAddress = network.EndAddress
-	result.CIDR = fmt.Sprintf("%s - %s", network.StartAddress, network.EndAddress)
-
+	result.CIDR = netutil.FromRange(
+		result.StartAddress,
+		result.EndAddress,
+	)
 	// Fill country.
 	result.Country = network.Country
 
@@ -78,4 +83,22 @@ func (p *Provider) Enrich(result *ip.Result) error {
 // Register the provider when the package is loaded.
 func init() {
 	providers.Register(New())
+}
+
+// cidrFromRange converts a network range into CIDR notation when possible.
+func cidrFromRange(start, end string) string {
+	startIP := net.ParseIP(start)
+	endIP := net.ParseIP(end)
+
+	if startIP == nil || endIP == nil {
+		return fmt.Sprintf("%s - %s", start, end)
+	}
+
+	ones, bits := net.IPMask(startIP.To4()).Size()
+
+	if bits == 32 {
+		return fmt.Sprintf("%s/%d", start, ones)
+	}
+
+	return fmt.Sprintf("%s - %s", start, end)
 }
