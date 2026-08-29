@@ -2,10 +2,11 @@ package network
 
 import (
 	"fmt"
+	"math/bits"
 	"net"
 )
 
-// FromRange converts a start/end range into CIDR notation.
+// FromRange converts a start/end range into the shortest CIDR prefix.
 func FromRange(start, end string) string {
 	startIP := net.ParseIP(start)
 	endIP := net.ParseIP(end)
@@ -14,29 +15,39 @@ func FromRange(start, end string) string {
 		return fmt.Sprintf("%s - %s", start, end)
 	}
 
-	start4 := startIP.To4()
-	end4 := endIP.To4()
+	// IPv4.
+	if s4 := startIP.To4(); s4 != nil {
+		e4 := endIP.To4()
 
-	if start4 == nil || end4 == nil {
-		return fmt.Sprintf("%s - %s", start, end)
-	}
+		var xor uint32
 
-	for prefix := 32; prefix >= 0; prefix-- {
-		mask := net.CIDRMask(prefix, 32)
-		network := start4.Mask(mask)
-
-		if network.Equal(start4) {
-			broadcast := make(net.IP, 4)
-
-			for i := 0; i < 4; i++ {
-				broadcast[i] = network[i] | ^mask[i]
-			}
-
-			if broadcast.Equal(end4) {
-				return fmt.Sprintf("%s/%d", network.String(), prefix)
-			}
+		for i := 0; i < 4; i++ {
+			xor = (xor << 8) | uint32(s4[i]^e4[i])
 		}
+
+		prefix := 32 - bits.Len32(xor)
+
+		return fmt.Sprintf("%s/%d", s4.String(), prefix)
 	}
 
-	return fmt.Sprintf("%s - %s", start, end)
+	// IPv6.
+	s16 := startIP.To16()
+	e16 := endIP.To16()
+
+	prefix := 0
+
+	for i := 0; i < 16; i++ {
+
+		diff := s16[i] ^ e16[i]
+
+		if diff == 0 {
+			prefix += 8
+			continue
+		}
+
+		prefix += bits.LeadingZeros8(diff)
+		break
+	}
+
+	return fmt.Sprintf("%s/%d", startIP.String(), prefix)
 }
