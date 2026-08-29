@@ -10,6 +10,7 @@ import (
 	"bazeth/internal/dns"
 	"bazeth/internal/output"
 	"bazeth/internal/session"
+	"bazeth/internal/tld"
 	"bazeth/internal/whois"
 )
 
@@ -107,6 +108,20 @@ func main() {
 		}
 
 		whois.Print(result)
+
+	case "tld":
+		if len(args) != 2 {
+			fmt.Println("Usage: bazeth tld <extension>")
+			os.Exit(1)
+		}
+
+		result, err := tld.Lookup(args[1])
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+
+		tld.Print(result)
 
 	default:
 		printUsage()
