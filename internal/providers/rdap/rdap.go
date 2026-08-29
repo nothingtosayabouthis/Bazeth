@@ -30,6 +30,13 @@ func (p *Provider) Enrich(result *ip.Result) error {
 		return err
 	}
 
+	// Fill registry information.
+	result.NetworkName = network.Handle
+
+	if network.Port43 != "" {
+		result.Registry = network.Port43
+	}
+
 	// Fill network range.
 	result.StartAddress = network.StartAddress
 	result.EndAddress = network.EndAddress

@@ -27,4 +27,6 @@ func main() {
 	fmt.Println("Abuse:", result.AbuseEmail)
 	fmt.Println("Sources:", result.Source)
 	fmt.Println("Reverse DNS:", result.ReverseDNS)
+	fmt.Println("Registry:", result.Registry)
+	fmt.Println("Network:", result.NetworkName)
 }

@@ -6,6 +6,8 @@ type Result struct {
 
 	Organization string
 	Country      string
+	Registry     string
+	NetworkName  string
 
 	CIDR         string
 	StartAddress string
