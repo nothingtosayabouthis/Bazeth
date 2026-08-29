@@ -57,9 +57,7 @@ func (p *Provider) Enrich(result *ip.Result) error {
 	}
 
 	// Fill organization.
-	if len(network.Entities) > 0 {
-		entity := network.Entities[0]
-
+	if entity := bestEntity(network.Entities); entity != nil {
 		if name := entity.VCard.Name(); name != "" {
 			result.Organization = name
 		} else if org := entity.VCard.Org(); org != "" {
