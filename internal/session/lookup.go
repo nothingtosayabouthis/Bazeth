@@ -5,6 +5,7 @@ import (
 
 	"bazeth/internal/ip"
 	"bazeth/internal/providers/rdap"
+	"bazeth/internal/providers/reverse_dns"
 )
 
 func Lookup(address string) (*ip.Result, error) {
@@ -18,11 +19,13 @@ func Lookup(address string) (*ip.Result, error) {
 		Version: version,
 	}
 
-	provider := rdap.New()
-
-	if err := provider.Enrich(result); err != nil {
+	rdapProvider := rdap.New()
+	if err := rdapProvider.Enrich(result); err != nil {
 		return nil, err
 	}
+
+	dnsProvider := reverse_dns.New()
+	_ = dnsProvider.Enrich(result)
 
 	return result, nil
 }

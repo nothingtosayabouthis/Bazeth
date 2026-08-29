@@ -26,4 +26,5 @@ func main() {
 	fmt.Println("CIDR:", result.CIDR)
 	fmt.Println("Abuse:", result.AbuseEmail)
 	fmt.Println("Sources:", result.Source)
+	fmt.Println("Reverse DNS:", result.ReverseDNS)
 }
