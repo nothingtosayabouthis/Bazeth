@@ -10,6 +10,7 @@ import (
 	"bazeth/internal/dns"
 	"bazeth/internal/output"
 	"bazeth/internal/session"
+	"bazeth/internal/whois"
 )
 
 const Version = "0.1.0-alpha"
@@ -90,6 +91,22 @@ func main() {
 
 	case "version":
 		fmt.Printf("Bazeth %s\n", Version)
+
+	case "whois":
+		if len(args) != 2 {
+			fmt.Println("Usage: bazeth whois <domain>")
+			os.Exit(1)
+		}
+
+		client := whois.New()
+
+		result, err := client.Lookup(args[1])
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+
+		whois.Print(result)
 
 	default:
 		printUsage()
