@@ -1,15 +1,19 @@
 package reverse_dns
 
 import (
-	"net"
-
+	"bazeth/internal/dns"
 	"bazeth/internal/ip"
+	"bazeth/internal/providers"
 )
 
-type Provider struct{}
+type Provider struct {
+	client *dns.Client
+}
 
 func New() *Provider {
-	return &Provider{}
+	return &Provider{
+		client: dns.New(),
+	}
 }
 
 func (p *Provider) Name() string {
@@ -17,14 +21,17 @@ func (p *Provider) Name() string {
 }
 
 func (p *Provider) Enrich(result *ip.Result) error {
-	names, err := net.LookupAddr(result.IP)
-	if err != nil || len(names) == 0 {
+	name, err := p.client.PTR(result.IP)
+	if err != nil || name == "" {
 		return nil
 	}
 
-	// Store the first PTR record and remove the trailing dot.
-	result.ReverseDNS = names[0][:len(names[0])-1]
+	result.ReverseDNS = name
 	result.Source = append(result.Source, p.Name())
 
 	return nil
+}
+
+func init() {
+	providers.Register(New())
 }
