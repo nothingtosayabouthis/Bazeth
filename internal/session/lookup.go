@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"bazeth/internal/ip"
-	"bazeth/internal/providers/rdap"
-	"bazeth/internal/providers/reverse_dns"
+	"bazeth/internal/providers"
+
+	_ "bazeth/internal/providers/rdap"
+	_ "bazeth/internal/providers/reverse_dns"
 )
 
 func Lookup(address string) (*ip.Result, error) {
@@ -19,13 +21,10 @@ func Lookup(address string) (*ip.Result, error) {
 		Version: version,
 	}
 
-	rdapProvider := rdap.New()
-	if err := rdapProvider.Enrich(result); err != nil {
-		return nil, err
+	// Execute every registered provider.
+	for _, provider := range providers.All() {
+		_ = provider.Enrich(result)
 	}
-
-	dnsProvider := reverse_dns.New()
-	_ = dnsProvider.Enrich(result)
 
 	return result, nil
 }

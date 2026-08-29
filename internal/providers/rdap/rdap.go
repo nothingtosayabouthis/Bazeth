@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"bazeth/internal/ip"
+	"bazeth/internal/providers"
 
 	"github.com/openrdap/rdap"
 )
@@ -63,4 +64,9 @@ func (p *Provider) Enrich(result *ip.Result) error {
 	result.Source = append(result.Source, p.Name())
 
 	return nil
+}
+
+// Register the provider when the package is loaded.
+func init() {
+	providers.Register(New())
 }
