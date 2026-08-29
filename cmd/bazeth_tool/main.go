@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"bazeth/internal/output"
 	"bazeth/internal/session"
 )
 
@@ -19,20 +20,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("IP:", result.IP)
-	fmt.Println("Version:", result.Version)
-	fmt.Println("ASN:", result.ASN)
-	fmt.Println("Organization:", result.Organization)
-	fmt.Println("Registry:", result.Registry)
-	fmt.Println("Network:", result.NetworkName)
-	fmt.Println("Country:", result.Country)
-	fmt.Println("CIDR:", result.CIDR)
-	fmt.Println("Abuse:", result.AbuseEmail)
-	fmt.Println("Reverse DNS:", result.ReverseDNS)
-	fmt.Println("Sources:", result.Source)
-	fmt.Println("HTTP Status:", result.HTTPStatus)
-	fmt.Println("Server:", result.HTTPServer)
-	fmt.Println("Powered By:", result.PoweredBy)
-	fmt.Println("Redirect:", result.Redirect)
-	fmt.Println("TLS CN:", result.TLSCommonName)
+	output.Print(result)
 }
