@@ -20,6 +20,11 @@ type Result struct {
 	ThreatScore int
 	IsMalicious bool
 	UsageType   string
+	HTTPStatus  int
 
-	Source []string
+	HTTPServer    string
+	PoweredBy     string
+	Redirect      string
+	TLSCommonName string
+	Source        []string
 }

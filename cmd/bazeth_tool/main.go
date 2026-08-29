@@ -30,4 +30,9 @@ func main() {
 	fmt.Println("Abuse:", result.AbuseEmail)
 	fmt.Println("Reverse DNS:", result.ReverseDNS)
 	fmt.Println("Sources:", result.Source)
+	fmt.Println("HTTP Status:", result.HTTPStatus)
+	fmt.Println("Server:", result.HTTPServer)
+	fmt.Println("Powered By:", result.PoweredBy)
+	fmt.Println("Redirect:", result.Redirect)
+	fmt.Println("TLS CN:", result.TLSCommonName)
 }

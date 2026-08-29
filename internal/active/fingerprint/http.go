@@ -34,6 +34,7 @@ func HTTP(ip string) (*HTTPResult, error) {
 			return nil, err
 		}
 	}
+	defer resp.Body.Close()
 
 	result := &HTTPResult{
 		Status:    resp.StatusCode,

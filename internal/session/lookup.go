@@ -6,6 +6,7 @@ import (
 	"bazeth/internal/ip"
 	"bazeth/internal/providers"
 
+	"bazeth/internal/active/fingerprint"
 	_ "bazeth/internal/providers/abuseipdb"
 	_ "bazeth/internal/providers/asn"
 	_ "bazeth/internal/providers/rdap"
@@ -27,6 +28,12 @@ func Lookup(address string) (*ip.Result, error) {
 	for _, provider := range providers.All() {
 		_ = provider.Enrich(result)
 	}
-
+	if httpInfo, err := fingerprint.HTTP(result.IP); err == nil {
+		result.HTTPStatus = httpInfo.Status
+		result.HTTPServer = httpInfo.Server
+		result.PoweredBy = httpInfo.PoweredBy
+		result.Redirect = httpInfo.Location
+		result.TLSCommonName = httpInfo.TLSCommonName
+	}
 	return result, nil
 }
